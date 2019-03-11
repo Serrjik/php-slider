@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>PHP-slider</title>
 </head>
 <body>
 	
@@ -15,22 +15,30 @@
 	// 	exit();
 	// }
 
+	define('HOST', 'http://' . $_SERVER['HTTP_HOST'] . '/');
+	define('ROOT', dirname(__FILE__).'/');
+
+	require_once(ROOT . 'db.php');
+
+
 	if ( count($_FILES) > 0 ) {
+
+		$sliderImages = array();
 
 		for ($i=0; $i < count($_FILES['sliderImages']['name']); $i++) { 
 			
-			$fileName = $_FILES['sliderImages']['name'][i];
-			$fileType = $_FILES['sliderImages']['type'][i];
-			$fileTmpName = $_FILES['sliderImages']['tmp_name'][i];
-			$fileError = $_FILES['sliderImages']['error'][i];
-			$fileSize = $_FILES['sliderImages']['size'][i];
+			$fileName = $_FILES['sliderImages']['name'][$i];
+			$fileType = $_FILES['sliderImages']['type'][$i];
+			$fileTmpName = $_FILES['sliderImages']['tmp_name'][$i];
+			$fileError = $_FILES['sliderImages']['error'][$i];
+			$fileSize = $_FILES['sliderImages']['size'][$i];
 
 			// echo $fileName . "<br>"; // avengers.JPG
 
 			// Находим расширение файла
-			$fileExt = strtolower( end ( explode('.', $fileName) ) ); // ['avengers', 'JPG'] => 'JPG' => 'jpg'
-
-			echo $fileExt; // jpg
+			$fileExtInArray = explode('.', $fileName); // ['avengers', 'JPG']
+			$fileExtAnyCase = end ( $fileExtInArray ); // ['avengers', 'JPG'] => 'JPG'
+			$fileExt = strtolower( $fileExtAnyCase ); // 'JPG' => 'jpg'
 
 			// Массив с разрешенными для загрузки расширениями файлов
 			$allowed = array('jpg', 'jpeg', 'jfif', 'png');
@@ -40,9 +48,13 @@
 					if ( $fileSize <  5242880 ) {
 						// Обрабатываем файл
 						$newFileName = uniqid('', true) . "." . $fileExt; // 29871248710943.jpg
-						$fileDest = 'slider/' . $newFileName; // slider/29871248710943.jpg
+						$fileDest = ROOT .'slider/' . $newFileName; // slider/29871248710943.jpg
 						move_uploaded_file($fileTmpName, $fileDest);
 						echo "<b>Файл был загружен успешно!</b>";
+
+						// Формируем массив с файлами
+						$sliderImages[] = $newFileName; // ['29871248710943.jpg', '8232552310943.jpg', '88712355250943.jpg']
+
 					} else {
 						echo("Вы загружаете слишком большой файл. Размер файла должен быть меньше чем 5 МБайт.");
 					}
@@ -54,6 +66,13 @@
 			}
 
 		}
+
+		$sliderJsonInfo = json_encode($sliderImages);
+
+		$sliderRow = R::dispense('sliders');
+		$sliderRow->images = $sliderJsonInfo;
+		R::store($sliderRow);
+		echo "Всё успешно записано в БД.";
 	}
 	?>
 
