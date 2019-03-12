@@ -18,14 +18,6 @@
 
 		$sliderImages = json_decode( $sliderArray['images'] );
 
-		// echo "<pre>";
-		// print_r($sliderImages);
-		// echo "</pre>";
-
-		// foreach ($sliderImages as $key => $slider) {
-		// 	echo "$slider <br>";
-		// }
-
 	?>
 
 	<div class="owl-carousel owl-theme" 

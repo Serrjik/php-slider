@@ -10,13 +10,6 @@
 	
 	<?php
 
-	// if ( count($_FILES) > 0 ) {
-	// 	echo "<pre>";
-	// 	print_r($_FILES);
-	// 	echo "</pre>";
-	// 	exit();
-	// }
-
 	define('HOST', 'http://' . $_SERVER['HTTP_HOST'] . '/');
 	define('ROOT', dirname(__FILE__).'/');
 
